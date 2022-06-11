@@ -1,0 +1,365 @@
+<Window x:Class="Test_task.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Test_task"
+        mc:Ignorable="d"
+        Title="Test task" MinWidth="1000" MinHeight="600" Width="1000" Height="600">
+    <Window.DataContext>
+        <local:ViewModel Buffer="linear"/>
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="BaseButton" TargetType="Button">
+            <Setter Property="Command" Value="{Binding GetChoosedFunc}"/>
+            <Setter Property="Grid.Row" Value="0"/>
+            <Setter Property="Background" Value="#018abd"/>
+            <Setter Property="Foreground" Value="#fff"/>
+            <Setter Property="Margin" Value="0,46"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="MaxHeight" Value="100"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="true">
+                    <Setter Property="Button.Foreground" Value="#004581"/>
+                </Trigger>
+                <Trigger Property="Button.IsPressed" Value="true">
+                    <Setter Property="Button.Foreground" Value="#000"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="BaseFooterButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Command" Value="{Binding GetFunctionResult}"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MaxHeight" Value="80"/>
+        </Style>
+        <Style x:Key="SelectedButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#001b48"/>
+        </Style>
+        
+        <Style x:Key="BaseLabel" TargetType="TextBox">
+            <Setter Property="Margin" Value="30, 25, 110, 40"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="BaseText" TargetType="TextBox" BasedOn="{StaticResource BaseLabel}">
+            <Setter Property="Grid.ColumnSpan" Value="2"/>
+            <Setter Property="Background" Value="#dde8f0"/>
+            <Setter Property="Margin" Value="100,50,80,58"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="MaxHeight" Value="80"/>
+            <Setter Property="MaxLength" Value="10"/>
+        </Style>
+        <Style x:Key="BaseComboBox" TargetType="ComboBox">
+            <Setter Property="Grid.ColumnSpan" Value="2"/>
+            <Setter Property="Margin" Value="100,45,62,58"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="MaxHeight" Value="80"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#dde8f0" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#97cbdc" />
+            </Style.Resources>
+
+        </Style>
+        <Style x:Key="BaseTableCell" TargetType="TextBox">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="MinWidth" Value="185"/>
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="Background" Value="#97cbdc"/>
+            <Setter Property="BorderBrush" Value="#559ee6"/>
+            <Setter Property="MaxLength" Value="8"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="#7fb5eb"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="HeaderCell" TargetType="TextBox" BasedOn="{StaticResource BaseTableCell}">
+            <Setter Property="BorderThickness" Value="0, 5, 5, 5"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="FontSize" Value="40"/>
+        </Style>
+        <Style x:Key="FuncCell" TargetType="TextBox" BasedOn="{StaticResource HeaderCell}">
+            <Setter Property="BorderThickness" Value="5, 0, 5, 5"/>
+            <Setter Property="FontSize" Value="25"/>
+        </Style>
+        <Style x:Key="ResultFuncCell" TargetType="TextBox" BasedOn="{StaticResource FuncCell}">
+            <Setter Property="Text" Value="{Binding FuncResult, Mode=OneTime}"/>
+        </Style>
+        <Style x:Key="XCell" TargetType="TextBox" BasedOn="{StaticResource BaseTableCell}">
+            <Setter Property="BorderThickness" Value="0, 0, 5, 5"/>
+            <Setter Property="Text" Value="{Binding XCoef, Mode=OneWayToSource}"/>
+        </Style>
+        <Style x:Key="YCell" TargetType="TextBox" BasedOn="{StaticResource XCell}">
+            <Setter Property="Text" Value="{Binding YCoef, Mode=OneWayToSource}"/>
+        </Style>
+
+    </Window.Resources>
+    <x:Code>
+        <![CDATA[
+            private int rowsCount = 1;
+            
+            
+            /// <summary>
+            /// Function for visually changing the selected function
+            /// </summary>
+            private void ChangeFunction(Button button)
+            {
+                foreach(Button but in new Button[5]{ linear, quadratic, cubic, fourthDegree, fifthDegree })
+                {
+                    if (but.Style != (Style)FindResource("BaseButton"))
+                    {
+                        but.Style = (Style)FindResource("BaseButton"); break;
+                    }
+                }
+                
+                button.Style = (Style)FindResource("SelectedButton");
+            }
+            
+            /// <summary>
+            /// The next 5 functions are event handlers 
+            /// for visually changing the selected function
+            /// </summary>
+            void LinearClick(object sender, RoutedEventArgs e) 
+            {
+                ChangeFunction((Button)e.OriginalSource);
+            }
+        
+            void QuadraticClick(object sender, RoutedEventArgs e) 
+            {
+                ChangeFunction((Button)e.OriginalSource);
+            }
+        
+            void CubicClick(object sender, RoutedEventArgs e) 
+            {
+                ChangeFunction((Button)e.OriginalSource);
+            }
+        
+            void FourthDegreeClick(object sender, RoutedEventArgs e) 
+            {
+                ChangeFunction((Button)e.OriginalSource);
+            }
+        
+            void FifthDegreeClick(object sender, RoutedEventArgs e) 
+            {
+                ChangeFunction((Button)e.OriginalSource);
+            }
+            
+            /// <summary>
+            /// Function for handling the table data update event 
+            /// from the side of interaction with the View
+            /// </summary>
+            void EnterClick(object sender, RoutedEventArgs e) 
+            {
+        
+                try 
+                {
+                    Convert.ToSingle(((TextBox)XColumn.Children[XColumn.Children.Count-1]).Text);
+                    Convert.ToSingle(((TextBox)YColumn.Children[YColumn.Children.Count-1]).Text);
+                }
+                catch (FormatException ex)
+                {
+                    return;
+                }
+        
+                ((TextBox)FuncColumn.Children[rowsCount]).Style = (Style)FindResource("ResultFuncCell");
+        
+                /* 
+                 * This path of function is a rude crutch
+                 * but I couldn't fulfill  the requirement
+                 * for the table by different way
+                */
+                
+        
+                TextBox ResultCell = new TextBox();
+                ResultCell.Style = (Style)FindResource("ResultFuncCell");
+                FuncColumn.Children.Remove(FuncColumn.Children[rowsCount]);
+                FuncColumn.Children.Add(ResultCell);
+        
+                TextBox XCell = new TextBox();
+                XCell.Style = (Style)FindResource("XCell");
+                XCell.Text = ((TextBox)XColumn.Children[rowsCount]).Text;
+                XCell.IsReadOnly = true;
+                XColumn.Children.Remove(XColumn.Children[rowsCount]);
+                XColumn.Children.Add(XCell);
+        
+                TextBox YCell = new TextBox();
+                YCell.Style = (Style)FindResource("YCell");
+                YCell.Text = ((TextBox)YColumn.Children[rowsCount]).Text;
+                YCell.IsReadOnly = true;
+                YColumn.Children.Remove(YColumn.Children[rowsCount]);
+                YColumn.Children.Add(YCell);
+            }
+        
+            
+            /// <summary>
+            /// Function for adding row into the table 
+            /// </summary>
+            void AddRow(object sender, RoutedEventArgs e) 
+            {
+                if (((TextBox)XColumn.Children[rowsCount]).IsReadOnly == false)
+                {
+                    ErrorLabel.Text = "Fill the last row!";
+                    return;
+                }
+        
+                rowsCount++;
+        
+                TextBox FuncBox = new TextBox();
+                FuncBox.Style = (Style)FindResource("FuncCell");
+                FuncColumn.Children.Add(FuncBox);
+        
+                TextBox XBox = new TextBox();
+                XBox.Style = (Style)FindResource("XCell");
+                XColumn.Children.Add(XBox);
+        
+                TextBox YBox = new TextBox();
+                YBox.Style = (Style)FindResource("YCell");
+                YColumn.Children.Add(YBox);
+            }
+            ]]>
+    </x:Code>
+
+    <Grid x:Name="MainGrid" Background="#97cbdc">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="146*"/>
+            <RowDefinition Height="142*"/>
+            <RowDefinition Height="142*"/>
+            <RowDefinition Height="142*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Func buttons -->
+        <Button 
+            x:Name="linear" 
+            Click="LinearClick" 
+            Content="linear" 
+            Style="{StaticResource SelectedButton}" 
+            CommandParameter="linear" />
+        <Button 
+            x:Name="quadratic" 
+            Click="QuadraticClick" 
+            Content="quadratic" 
+            Grid.Column="1" 
+            Style="{StaticResource BaseButton}" 
+            CommandParameter="quadratic"/>
+        <Button 
+            x:Name="cubic" 
+            Click="CubicClick" 
+            Content="cubic" 
+            Grid.Column="2" 
+            Style="{StaticResource BaseButton}" 
+            CommandParameter="cubic"/>
+        <Button 
+            x:Name="fourthDegree" 
+            Click="FourthDegreeClick" 
+            Content="4th degree" 
+            Grid.Column="3" 
+            Style="{StaticResource BaseButton}" 
+            CommandParameter="fourthDegree"/>
+        <Button 
+            x:Name="fifthDegree" 
+            Click="FifthDegreeClick" 
+            Content="5th degree" 
+            Grid.Column="4" 
+            Style="{StaticResource BaseButton}" 
+            CommandParameter="fifthDegree"/>
+
+        <!-- Coef labels -->
+        <ComboBox Style="{StaticResource BaseComboBox}" ItemsSource="{Binding Path=COdds}" SelectedItem="{Binding Path=CurCCoef}" Grid.Row="1"/>
+        <TextBox Text="C:" Style="{StaticResource BaseLabel}" Grid.Row="1"/>
+        <TextBox x:Name="BCoef" Text="{Binding BCoef, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource BaseText}" Grid.Row="2"/>
+        <TextBox Text="B:" Style="{StaticResource BaseLabel}" Grid.Row="2"/>
+        <TextBox x:Name="ACoef" Text="{Binding ACoef, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource BaseText}" Grid.Row="3"/>
+        <TextBox Text="A:" Style="{StaticResource BaseLabel}" Grid.Row="3"/>
+        
+        <!-- Table -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="0 0 18 0">
+            <Grid x:Name="FuncTable">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="FuncColumn">
+                    <TextBox Text="f(x,y)" Style="{StaticResource HeaderCell}" BorderThickness="5"/>
+                    <TextBox Style="{StaticResource FuncCell}"/>
+                </StackPanel>
+                <StackPanel x:Name="XColumn" Grid.Column="1">
+                    <TextBox Text="x" Style="{StaticResource HeaderCell}"/>
+                    <TextBox Style="{StaticResource XCell}"/>
+                </StackPanel>
+                <StackPanel x:Name="YColumn" Grid.Column="2">
+                    <TextBox Text="y" Style="{StaticResource HeaderCell}"/>
+                    <TextBox Style="{StaticResource YCell}"/>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+        
+        <!-- Footer -->
+        
+        <Grid Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBox 
+                Grid.ColumnSpan="2" 
+                x:Name="ErrorLabel" 
+                Text="{Binding ErrorLabel}"  
+                Background="Transparent" 
+                Foreground="Red" 
+                Margin="0 55 0 0" 
+                FontSize="30" 
+                TextAlignment="Center" 
+                IsReadOnly="True" 
+                BorderThickness="0"/>
+            <Button 
+                Grid.Column="1" 
+                Click="AddRow" 
+                Command="" 
+                Content="Add row" 
+                Style="{StaticResource BaseFooterButton}" 
+                FontSize="25" 
+                Margin="0 15 0 0"
+                VerticalAlignment="Top"/>
+            <Button 
+                Grid.Column="2" 
+                Click="EnterClick" 
+                Content="Enter" 
+                Style="{StaticResource BaseFooterButton}" 
+                Margin="45 75 15 15" 
+                IsDefault="True"/>
+        </Grid>
+        <TextBlock x:Name="Buffer" Text="{Binding Buffer, UpdateSourceTrigger=PropertyChanged}" Height="0" Width="0"/>
+        
+    </Grid>
+</Window>
