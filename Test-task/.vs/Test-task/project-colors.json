@@ -1,0 +1,26 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "2641cc83-55f9-44c6-9eb9-21f1be6e0945": {
+      "ProjectGuid": "2641cc83-55f9-44c6-9eb9-21f1be6e0945",
+      "DisplayName": "Test-task",
+      "ColorIndex": 0
+    },
+    "6d7f501a-2c8c-4c0d-bdb4-6fa9a25d87e3": {
+      "ProjectGuid": "6d7f501a-2c8c-4c0d-bdb4-6fa9a25d87e3",
+      "DisplayName": "UnitTests",
+      "ColorIndex": 1
+    },
+    "d81698ea-5492-47db-b7b4-dbb052647d73": {
+      "ProjectGuid": "d81698ea-5492-47db-b7b4-dbb052647d73",
+      "DisplayName": "UnitTests",
+      "ColorIndex": 2
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Прочие файлы",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 3
+}
