@@ -36,14 +36,10 @@ Also it's necessary to fulfill the following requirements:
 8. Code must be posted here.
 
 # Implementation
-The result of the work is represented by the following files:
+The result of the work is represented by the following folders:
 
-+ [View source code](https://github.com/Stix-tomsk/Test-task/blob/main/View.xaml);
-+ [Model source code](https://github.com/Stix-tomsk/Test-task/blob/main/Model.cs);
-+ [ViewModel source code](https://github.com/Stix-tomsk/Test-task/blob/main/ViewModel.cs);
-+ [Unit tests source code](https://github.com/Stix-tomsk/Test-task/blob/main/UnitTests.cs);
-+ [Odds class source code](https://github.com/Stix-tomsk/Test-task/blob/main/Odds.cs);
-+ [Project source achive](https://github.com/Stix-tomsk/Test-task/blob/main/test-task.rar);
++ [Project directory](https://github.com/Stix-tomsk/Test-task/tree/main/Test-task);
++ [Unit tests directory](https://github.com/Stix-tomsk/Test-task/tree/main/UnitTests);
 
 Visually the application is the following:
 
@@ -60,6 +56,11 @@ Usability of application cannot be represented by screenshots, but results of un
 Screenshot of the application during active work:
 
 ![g4](https://user-images.githubusercontent.com/57837079/173205023-68049669-3737-457e-aeb1-8ec37434bf47.png)
+
+After rework:
+
+![rework](https://user-images.githubusercontent.com/57837079/174471882-89dd4127-84fa-408f-9fec-a0910f641a3f.png)
+
 
 ## Conclusion
 Independently of the result of the employer assessment, it was interesting to complete this task. These two days were marked on the calendar as productivity holidays :)
