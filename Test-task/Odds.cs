@@ -2,6 +2,9 @@
 
 namespace Test_task
 {
+    /// <summary>
+    /// Класс, содержащий поля для хранения коэффициентов функции
+    /// </summary>
     public class Odds
     {
         public float aCoef { get; set; }
